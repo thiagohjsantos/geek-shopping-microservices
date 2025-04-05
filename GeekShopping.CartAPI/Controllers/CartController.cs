@@ -63,5 +63,27 @@ namespace GeekShopping.CartAPI.Controllers
 
             return NoContent();
         }
+
+        [HttpPost("apply-coupon")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<CartVO>> ApplyCoupon(CartVO cartVO)
+        {
+            var status = await _repository.ApplyCoupon(cartVO.CartHeader.UserId, cartVO.CartHeader.CouponCode);
+            if (!status) return NotFound();
+
+            return Ok(status);
+        }
+        
+        [HttpDelete("remove-coupon/{userId}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<CartVO>> RemoveCoupon(string userId)
+        {
+            var status = await _repository.RemoveCoupon(userId);
+            if (!status) return NotFound();
+
+            return Ok(status);
+        }
     }
 }
