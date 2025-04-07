@@ -1,6 +1,6 @@
 using GeekShopping.CartAPI.Data.ValueObjects;
+using GeekShopping.CartAPI.Messages;
 using GeekShopping.CartAPI.Repository;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GeekShopping.CartAPI.Controllers
@@ -84,6 +84,20 @@ namespace GeekShopping.CartAPI.Controllers
             if (!status) return NotFound();
 
             return Ok(status);
+        } 
+        
+        [HttpPost("checkout")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<CheckoutHeaderVO>> Checkout(CheckoutHeaderVO checkoutHeaderVO)
+        {
+            var cart = await _repository.FindCartByUserId(checkoutHeaderVO.UserId);
+            if (cart == null) return NotFound();
+
+            checkoutHeaderVO.CartDetails = cart.CartDetails;
+            checkoutHeaderVO.DateTime = DateTime.Now;
+
+            return Ok(checkoutHeaderVO);
         }
     }
 }
