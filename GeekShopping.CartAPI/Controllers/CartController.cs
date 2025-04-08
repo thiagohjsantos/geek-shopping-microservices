@@ -1,5 +1,6 @@
 using GeekShopping.CartAPI.Data.ValueObjects;
 using GeekShopping.CartAPI.Messages;
+using GeekShopping.CartAPI.RabbitMQSender;
 using GeekShopping.CartAPI.Repository;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,11 +11,15 @@ namespace GeekShopping.CartAPI.Controllers
     public class CartController : ControllerBase
     {
         private ICartRepository _repository;
+        private IRabbitMQMessageSender _rabbitMQMessageSender;
 
-        public CartController(ICartRepository repository)
+        public CartController(ICartRepository repository,
+            IRabbitMQMessageSender rabbitMQMessageSender)
         {
-            _repository = repository ?? throw new
-                ArgumentNullException(nameof(repository));
+            _repository = repository
+                ?? throw new ArgumentNullException(nameof(repository));
+            _rabbitMQMessageSender = rabbitMQMessageSender
+                ?? throw new ArgumentNullException(nameof(rabbitMQMessageSender));
         }
 
         [HttpGet("find-cart/{id}")]
@@ -91,11 +96,15 @@ namespace GeekShopping.CartAPI.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<CheckoutHeaderVO>> Checkout(CheckoutHeaderVO checkoutHeaderVO)
         {
+            if (checkoutHeaderVO?.UserId == null) return BadRequest();
+
             var cart = await _repository.FindCartByUserId(checkoutHeaderVO.UserId);
             if (cart == null) return NotFound();
 
             checkoutHeaderVO.CartDetails = cart.CartDetails;
             checkoutHeaderVO.DateTime = DateTime.Now;
+
+            _rabbitMQMessageSender.SendMessage(checkoutHeaderVO, "checkoutqueue");
 
             return Ok(checkoutHeaderVO);
         }
