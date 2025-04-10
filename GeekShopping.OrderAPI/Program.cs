@@ -1,3 +1,4 @@
+using GeekShopping.OrderAPI.MessageConsumer;
 using GeekShopping.OrderAPI.Model.Context;
 using GeekShopping.OrderAPI.Repository;
 using Microsoft.EntityFrameworkCore;
@@ -69,6 +70,8 @@ var builderContext = new DbContextOptionsBuilder<Context>();
     builderContext.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 
 builder.Services.AddSingleton(new OrderRepository(builderContext.Options));
+
+builder.Services.AddHostedService<RabbitMQCheckoutConsumer>();
 
 var app = builder.Build();
 
