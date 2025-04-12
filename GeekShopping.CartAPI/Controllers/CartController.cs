@@ -121,6 +121,8 @@ namespace GeekShopping.CartAPI.Controllers
 
             _rabbitMQMessageSender.SendMessage(checkoutHeaderVO, "checkoutqueue");
 
+            await _cartRepository.ClearCart(checkoutHeaderVO.UserId);
+
             return Ok(checkoutHeaderVO);
         }
     }
