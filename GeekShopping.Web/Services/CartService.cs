@@ -95,7 +95,6 @@ namespace GeekShopping.Web.Services
             {
                 return "Coupon price has changed, please confirm!";
             }
-
             else throw new Exception("Something went wrong when calling API");
         }
 
