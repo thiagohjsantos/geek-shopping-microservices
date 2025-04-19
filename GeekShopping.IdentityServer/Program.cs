@@ -42,8 +42,21 @@ builderIdentity.AddDeveloperSigningCredential();
 
 var app = builder.Build();
 
-var scope = app.Services.CreateScope();
-var identityService = scope.ServiceProvider.GetService<IDbInitializer>();
+using (var scope = app.Services.CreateScope())
+{
+    if (app.Environment.IsDevelopment())
+    {
+        var db = scope.ServiceProvider.GetRequiredService<Context>();
+
+        if (db.Database.GetPendingMigrations().Any())
+        {
+            db.Database.Migrate();
+        }
+    }
+
+    var identityService = scope.ServiceProvider.GetService<IDbInitializer>();
+    identityService?.Initialize();
+}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -56,8 +69,6 @@ app.UseStaticFiles();
 app.UseRouting();
 app.UseIdentityServer();
 app.UseAuthorization();
-
-identityService?.Initialize();
 
 app.MapControllerRoute(
     name: "default",
