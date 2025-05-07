@@ -71,7 +71,7 @@ Below are the services that compose the GeekShopping architecture:
 
     **Endpoints:**  
 
-    ![alt text](product-endpoints.png)
+    ![ProductAPI endpoints](product-endpoints.png)
 
 - ### `GeekShopping.CartAPI`  
     Manages the shopping cart. Supports:
@@ -85,14 +85,14 @@ Below are the services that compose the GeekShopping architecture:
 
     **Endpoints:**  
 
-    ![alt text](cart-endpoints.png)
+    ![CartAPI endpoints](cart-endpoints.png)
 
 - ### `GeekShopping.CouponAPI`  
     Handles discount coupon logic. It exposes an endpoint to retrieve coupon details based on the coupon code. This microservice is integrated with the CartAPI through synchronous communication and is invoked during the checkout process to validate the applied discount.
 
     **Endpoints:**  
 
-    ![alt text](coupon-endpoints.png)
+    ![CouponAPI endpoints](coupon-endpoints.png)
     
 - ### `GeekShopping.OrderAPI`  
     Responsible for:
